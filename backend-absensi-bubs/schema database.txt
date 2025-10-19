@@ -1,0 +1,25 @@
+=create table 
+
+CREATE TABLE wplp_expenses (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT UNSIGNED NOT NULL,
+  date DATE NOT NULL,
+  amount INT NOT NULL, -- dalam satuan rupiah, tanpa titik/koma
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+=insert dummy data
+INSERT INTO wplp_expenses (user_id, date, amount, description)
+VALUES 
+(1, '2025-10-18', 20000, 'Bensin'),
+(1, '2025-10-18', 10000, 'Jajan pentol'),
+(1, '2025-10-19', 5000000, 'Beli komputer'),
+(1, '2025-10-19', 1000000, 'Beli keyboard'),
+(1, '2025-10-20', 15000, 'Parkir dan kopi'),
+(1, '2025-10-20', 5000, 'Jajan gorengan'),
+(1, '2025-10-21', 30000, 'Bensin'),
+(1, '2025-10-21', 25000, 'Makan siang'),
+(1, '2025-10-22', 12000, 'Jajan es teh dan roti'),
+(1, '2025-10-22', 200000, 'Beli mouse');

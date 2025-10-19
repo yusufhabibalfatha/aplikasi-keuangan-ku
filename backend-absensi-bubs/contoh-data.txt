@@ -1,0 +1,29 @@
+{
+    "success": true,
+    "jumlah_siswa": 2,
+    "kriteria": {
+        "kelas": "Kelas 7",
+        "hari": "Sabtu",
+        "mata_pelajaran": "Informatika"
+    },
+    "data": [
+        {
+            "jadwal_id": "1",
+            "siswa_id": "1",
+            "nama_lengkap": "Akram",
+            "jenis_kelamin": "L",
+            "nama_kelas": "Kelas 7",
+            "hari": "Sabtu",
+            "mata_pelajaran": "Informatika"
+        },
+        {
+            "jadwal_id": "1",
+            "siswa_id": "2",
+            "nama_lengkap": "Ardhan",
+            "jenis_kelamin": "L",
+            "nama_kelas": "Kelas 7",
+            "hari": "Sabtu",
+            "mata_pelajaran": "Informatika"
+        }
+    ]
+}
