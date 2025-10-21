@@ -1,212 +1,684 @@
+/* ExpenseTracker.css - MULTI THEME SYSTEM */
+
+/* Base Styles */
 .expense-tracker {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #f5f5f5;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
 }
 
-/* Header */
-.simple-header {
-    background: #2c3e50;
-    color: white;
-    padding: 15px 20px;
-    text-align: center;
-    flex-shrink: 0;
-}
-
-.simple-header h1 {
-    margin: 0;
-    font-size: 1.4em;
-    font-weight: 600;
-}
-
-/* Month Section */
-.month-section {
-    margin-bottom: 20px;
-}
-
-.month-header {
-    background: #34495e;
-    color: white;
-    padding: 12px 15px;
-    border-radius: 8px;
-    margin-bottom: 10px;
+/* Header Styles */
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
 }
 
-.month-header h3 {
+.header-left h1 {
     margin: 0;
-    font-size: 1.1em;
-    font-weight: 600;
+    font-size: 1.8rem;
+    font-weight: 900;
 }
 
-.month-total {
-    font-weight: 600;
-    font-size: 1em;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 4px 12px;
-    border-radius: 15px;
+.theme-indicator {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+    opacity: 0.8;
 }
 
-/* List Container - Scrollable */
-.expense-list-container {
-    flex: 1;
-    overflow: hidden;
+.header-right {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.theme-toggle-btn, .add-floating-btn {
+    padding: 0.75rem;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Theme Selector */
+.theme-selector {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    min-width: 280px;
+    max-width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    z-index: 10000; /* Lebih tinggi dari overlay */
+    position: relative;
+}
+
+.theme-selector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid;
+}
+
+.theme-selector-header h3 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.close-theme-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
     padding: 0;
 }
 
-.expenses-scrollable {
-    height: 100%;
-    overflow-y: auto;
-    padding: 15px;
+.theme-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-/* Expense Item dengan Edit dan Delete Button */
-.expense-item-simple {
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+}
+
+.theme-option:hover {
+    transform: translateY(-2px);
+}
+
+.theme-option.active {
+    font-weight: 900;
+}
+
+.theme-icon {
+    font-size: 1.2rem;
+}
+
+.theme-name {
+    flex: 1;
+    text-align: left;
+}
+
+.theme-check {
+    font-weight: 900;
+}
+
+/* NEO BRUTALISM THEME */
+.theme-neo-brutalism {
+    background: #FF6B6B;
+    border: 4px solid #000;
+    box-shadow: 8px 8px 0 #000;
+}
+
+.theme-neo-brutalism .header {
+    background: #4ECDC4;
+    border-bottom: 4px solid #000;
+}
+
+.theme-neo-brutalism .theme-toggle-btn,
+.theme-neo-brutalism .add-floating-btn {
+    background: #FFE66D;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+}
+
+.theme-neo-brutalism .theme-toggle-btn:hover,
+.theme-neo-brutalism .add-floating-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
+}
+
+/* GLASSMORPHISM THEME */
+.theme-glassmorphism {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.theme-glassmorphism .header {
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.theme-glassmorphism .theme-toggle-btn,
+.theme-glassmorphism .add-floating-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    color: white;
+}
+
+.theme-glassmorphism .theme-toggle-btn:hover,
+.theme-glassmorphism .add-floating-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+/* DARK MODE THEME */
+.theme-dark-mode {
+    background: #1a1a1a;
+    color: #ffffff;
+}
+
+.theme-dark-mode .header {
+    background: #2d2d2d;
+    border-bottom: 2px solid #444;
+}
+
+.theme-dark-mode .theme-toggle-btn,
+.theme-dark-mode .add-floating-btn {
+    background: #444;
+    border: 2px solid #666;
+    color: #fff;
+}
+
+.theme-dark-mode .theme-toggle-btn:hover,
+.theme-dark-mode .add-floating-btn:hover {
+    background: #555;
+    transform: scale(1.1);
+}
+
+/* MATERIAL DESIGN THEME */
+.theme-material {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.theme-material .header {
+    background: #6200ee;
+    color: white;
+}
+
+.theme-material .theme-toggle-btn,
+.theme-material .add-floating-btn {
+    background: #03dac6;
+    border: none;
+    color: #000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.theme-material .theme-toggle-btn:hover,
+.theme-material .add-floating-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+/* Common Component Styles */
+.expense-list-container {
+    padding: 0 1.5rem 2rem;
+}
+
+.expenses-scrollable {
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+/* Month Section - Theme Variants */
+.month-section {
+    margin-bottom: 2rem;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Neo Brutalism Month */
+.theme-neo-brutalism .month-section {
+    background: #FFF;
+    border: 4px solid #000;
+    box-shadow: 6px 6px 0 #000;
+}
+
+.theme-neo-brutalism .month-header {
+    background: #4ECDC4;
+    padding: 1.5rem;
+    border-bottom: 4px solid #000;
+}
+
+/* Glassmorphism Month */
+.theme-glassmorphism .month-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.theme-glassmorphism .month-header {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Dark Mode Month */
+.theme-dark-mode .month-section {
+    background: #2d2d2d;
+    border: 1px solid #444;
+}
+
+.theme-dark-mode .month-header {
+    background: #3d3d3d;
+    padding: 1.5rem;
+    border-bottom: 1px solid #444;
+}
+
+/* Material Month */
+.theme-material .month-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.theme-material .month-header {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Common Month Styles */
+.month-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 15px;
-    background: white;
-    margin-bottom: 8px;
-    border-radius: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+
+.month-name {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 900;
+}
+
+.month-total {
+    font-size: 1.3rem;
+    font-weight: 900;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+}
+
+/* Theme-specific Month Totals */
+.theme-neo-brutalism .month-total {
+    background: #FFE66D;
+    border: 3px solid #000;
+    box-shadow: 3px 3px 0 #000;
+}
+
+.theme-glassmorphism .month-total {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.theme-dark-mode .month-total {
+    background: #444;
+    border: 1px solid #666;
+}
+
+.theme-material .month-total {
+    background: #6200ee;
+    color: white;
+}
+
+/* Stats */
+.month-stats {
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.theme-neo-brutalism .month-stats {
+    background: #FFF;
+    border: 3px solid #000;
+    box-shadow: 3px 3px 0 #000;
+}
+
+.theme-glassmorphism .month-stats {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.theme-dark-mode .month-stats {
+    background: #3d3d3d;
+    border: 1px solid #555;
+}
+
+.theme-material .month-stats {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+}
+
+.stat-label {
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.stat-value {
+    font-weight: 900;
+    font-size: 0.9rem;
+}
+
+.over-budget {
+    background: rgba(255, 107, 107, 0.3);
+}
+
+.under-budget {
+    background: rgba(78, 205, 196, 0.3);
+}
+
+/* Date Separator */
+.date-separator {
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    font-weight: 900;
+    text-align: center;
+    font-size: 0.9rem;
+    border-radius: 8px;
+}
+
+.theme-neo-brutalism .date-separator {
+    background: #FFE66D;
+    border: 3px solid #000;
+    box-shadow: 3px 3px 0 #000;
+}
+
+.theme-glassmorphism .date-separator {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.theme-dark-mode .date-separator {
+    background: #444;
+    border: 1px solid #666;
+}
+
+.theme-material .date-separator {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+/* Expense Item */
+.expense-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
     transition: all 0.3s ease;
-    cursor: pointer;
+    border-bottom: 1px solid;
 }
 
-.expense-item-simple:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+.expense-item:last-child {
+    border-bottom: none;
 }
 
-.expense-item-simple.deleting {
-    opacity: 0.6;
-    background: #f8d7da;
+.expense-item:hover {
+    transform: translateX(4px);
+}
+
+.theme-neo-brutalism .expense-item {
+    background: #FFF;
+    border-bottom: 2px solid #000;
+}
+
+.theme-neo-brutalism .expense-item:hover {
+    background: #F0F0F0;
+}
+
+.theme-glassmorphism .expense-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.theme-glassmorphism .expense-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.theme-dark-mode .expense-item {
+    background: #2d2d2d;
+    border-bottom: 1px solid #444;
+}
+
+.theme-dark-mode .expense-item:hover {
+    background: #3d3d3d;
+}
+
+.theme-material .expense-item {
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.theme-material .expense-item:hover {
+    background: #f8f9fa;
 }
 
 .expense-left {
     flex: 1;
 }
 
-.clickable {
-    cursor: pointer;
-}
-
 .expense-desc {
-    font-weight: 500;
-    color: #2c3e50;
-    margin-bottom: 4px;
-    font-size: 0.95em;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
 }
 
 .expense-date {
-    font-size: 0.8em;
-    color: #7f8c8d;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    font-weight: 700;
 }
 
 .expense-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 1rem;
 }
 
-.expense-amount-simple {
-    font-weight: 600;
-    color: #e74c3c;
-    font-size: 0.95em;
+.expense-amount {
+    font-weight: 900;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+}
+
+/* Theme-specific Expense Amount */
+.theme-neo-brutalism .expense-amount {
+    background: #FFE66D;
+    border: 2px solid #000;
+    box-shadow: 2px 2px 0 #000;
+}
+
+.theme-glassmorphism .expense-amount {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.theme-dark-mode .expense-amount {
+    background: #444;
+    border: 1px solid #666;
+}
+
+.theme-material .expense-amount {
+    background: #bb86fc;
+    color: #000;
 }
 
 .delete-btn {
-    background: none;
+    padding: 0.5rem;
     border: none;
-    font-size: 1.1em;
     cursor: pointer;
-    padding: 5px;
-    border-radius: 5px;
-    transition: all 0.2s ease;
-    opacity: 0.7;
+    font-size: 1.2rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
 }
 
-.delete-btn:hover:not(:disabled) {
-    opacity: 1;
-    background: #f8d7da;
-    transform: scale(1.1);
+.theme-neo-brutalism .delete-btn {
+    background: #FF6B6B;
+    border: 2px solid #000;
+    box-shadow: 2px 2px 0 #000;
 }
 
-.delete-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+.theme-neo-brutalism .delete-btn:hover {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 #000;
 }
 
-/* Form Container - Sticky Bottom */
-.form-container {
-    background: white;
-    padding: 15px;
-    border-top: 1px solid #ddd;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-    flex-shrink: 0;
+.theme-glassmorphism .delete-btn {
+    background: rgba(255, 107, 107, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.expense-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.theme-glassmorphism .delete-btn:hover {
+    background: rgba(255, 107, 107, 1);
 }
 
-.form-row {
-    display: flex;
-    gap: 10px;
+.theme-dark-mode .delete-btn {
+    background: #dc3545;
+    border: 1px solid #666;
 }
 
-.form-input {
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1em;
-    background: white;
+.theme-dark-mode .delete-btn:hover {
+    background: #c82333;
 }
 
-.form-input:focus {
-    outline: none;
-    border-color: #3498db;
-}
-
-.date-input {
-    flex: 1;
-}
-
-.amount-input {
-    width: 100px;
-    text-align: right;
-}
-
-.desc-input {
-    flex: 1;
-}
-
-.submit-btn {
-    padding: 12px 20px;
-    background: #27ae60;
+.theme-material .delete-btn {
+    background: #cf6679;
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 1.2em;
-    font-weight: bold;
+}
+
+.theme-material .delete-btn:hover {
+    background: #b00020;
+}
+
+.clickable {
     cursor: pointer;
-    min-width: 50px;
 }
 
-.submit-btn:hover:not(:disabled) {
-    background: #219a52;
+.clickable:hover {
+    opacity: 0.8;
 }
 
-.submit-btn:disabled {
-    background: #95a5a6;
-    cursor: not-allowed;
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+}
+
+.theme-neo-brutalism .empty-state {
+    background: #FFF;
+    border: 4px solid #000;
+    box-shadow: 6px 6px 0 #000;
+}
+
+.theme-glassmorphism .empty-state {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.theme-dark-mode .empty-state {
+    background: #2d2d2d;
+    border: 1px solid #444;
+}
+
+.theme-material .empty-state {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.add-first-btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.theme-neo-brutalism .add-first-btn {
+    background: #FF6B6B;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+}
+
+.theme-neo-brutalism .add-first-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
+}
+
+.theme-glassmorphism .add-first-btn {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.theme-glassmorphism .add-first-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.theme-dark-mode .add-first-btn {
+    background: #444;
+    border: 1px solid #666;
+    color: white;
+}
+
+.theme-dark-mode .add-first-btn:hover {
+    background: #555;
+}
+
+.theme-material .add-first-btn {
+    background: #6200ee;
+    color: white;
+    border: none;
+}
+
+.theme-material .add-first-btn:hover {
+    background: #3700b3;
 }
 
 /* Modal Overlay */
@@ -216,169 +688,844 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    padding: 20px;
+    padding: 2rem;
+    backdrop-filter: blur(5px);
 }
 
-/* Edit Modal */
-.edit-modal {
-    background: white;
-    padding: 0;
-    border-radius: 15px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+/* Add Modal */
+.add-modal, .edit-modal, .delete-confirmation {
+    border-radius: 16px;
+    padding: 2rem;
     max-width: 500px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
 }
 
-.edit-header {
-    background: linear-gradient(135deg, #3498db, #2980b9);
+.theme-neo-brutalism .add-modal,
+.theme-neo-brutalism .edit-modal,
+.theme-neo-brutalism .delete-confirmation {
+    background: #FFE66D;
+    border: 4px solid #000;
+    box-shadow: 8px 8px 0 #000;
+}
+
+.theme-glassmorphism .add-modal,
+.theme-glassmorphism .edit-modal,
+.theme-glassmorphism .delete-confirmation {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
-    padding: 20px 25px;
+}
+
+.theme-dark-mode .add-modal,
+.theme-dark-mode .edit-modal,
+.theme-dark-mode .delete-confirmation {
+    background: #2d2d2d;
+    border: 1px solid #444;
+    color: white;
+}
+
+.theme-material .add-modal,
+.theme-material .edit-modal,
+.theme-material .delete-confirmation {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.add-header, .edit-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 15px 15px 0 0;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid;
 }
 
-.edit-header h2 {
+.theme-neo-brutalism .add-header,
+.theme-neo-brutalism .edit-header {
+    border-bottom: 3px solid #000;
+}
+
+.theme-glassmorphism .add-header,
+.theme-glassmorphism .edit-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.theme-dark-mode .add-header,
+.theme-dark-mode .edit-header {
+    border-bottom: 1px solid #444;
+}
+
+.theme-material .add-header,
+.theme-material .edit-header {
+    border-bottom: 2px solid #e9ecef;
+}
+
+.add-header h2, .edit-header h2 {
     margin: 0;
-    font-size: 1.4em;
-    font-weight: 600;
+    font-size: 1.5rem;
+    font-weight: 900;
 }
 
 .close-btn {
     background: none;
     border: none;
-    color: white;
-    font-size: 2em;
+    font-size: 2rem;
     cursor: pointer;
     padding: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-neo-brutalism .close-btn {
+    background: #FF6B6B;
+    border: 2px solid #000;
+}
+
+.theme-glassmorphism .close-btn {
+    background: rgba(255, 107, 107, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.theme-dark-mode .close-btn {
+    background: #dc3545;
+}
+
+.theme-material .close-btn {
+    background: #f8f9fa;
+    color: #666;
+}
+
+/* Form Styles */
+.add-form, .edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 900;
+    font-size: 1rem;
+}
+
+.form-input {
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.theme-neo-brutalism .form-input {
+    border: 3px solid #000;
+    background: #FFF;
+    box-shadow: 4px 4px 0 #000;
+}
+
+.theme-neo-brutalism .form-input:focus {
+    outline: none;
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
+}
+
+.theme-glassmorphism .form-input {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.theme-glassmorphism .form-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.theme-glassmorphism .form-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.theme-dark-mode .form-input {
+    background: #3d3d3d;
+    border: 1px solid #555;
+    color: white;
+}
+
+.theme-dark-mode .form-input:focus {
+    outline: none;
+    border-color: #666;
+}
+
+.theme-material .form-input {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    color: #333;
+}
+
+.theme-material .form-input:focus {
+    outline: none;
+    border-color: #6200ee;
+}
+
+.amount-input-container {
+    position: relative;
+}
+
+.currency-symbol {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 900;
+}
+
+.theme-neo-brutalism .currency-symbol {
+    color: #000;
+}
+
+.theme-glassmorphism .currency-symbol {
+    color: white;
+}
+
+.theme-dark-mode .currency-symbol {
+    color: white;
+}
+
+.theme-material .currency-symbol {
+    color: #666;
+}
+
+.amount-input-large {
+    padding-left: 3rem;
+}
+
+.amount-preview {
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.theme-neo-brutalism .amount-preview {
+    background: #FFF;
+    border: 2px solid #000;
+    box-shadow: 2px 2px 0 #000;
+}
+
+.theme-glassmorphism .amount-preview {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.theme-dark-mode .amount-preview {
+    background: #3d3d3d;
+    border: 1px solid #555;
+}
+
+.theme-material .amount-preview {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+
+/* Action Buttons */
+.add-actions, .edit-actions, .delete-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.cancel-add-btn, .cancel-edit-btn, .cancel-btn,
+.submit-add-btn, .save-btn, .confirm-delete-btn {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Neo Brutalism Buttons */
+.theme-neo-brutalism .cancel-add-btn,
+.theme-neo-brutalism .cancel-edit-btn,
+.theme-neo-brutalism .cancel-btn {
+    background: #4ECDC4;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+}
+
+.theme-neo-brutalism .submit-add-btn,
+.theme-neo-brutalism .save-btn,
+.theme-neo-brutalism .confirm-delete-btn {
+    background: #000;
+    color: #FFE66D;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+}
+
+.theme-neo-brutalism .cancel-add-btn:hover,
+.theme-neo-brutalism .cancel-edit-btn:hover,
+.theme-neo-brutalism .cancel-btn:hover,
+.theme-neo-brutalism .submit-add-btn:hover,
+.theme-neo-brutalism .save-btn:hover,
+.theme-neo-brutalism .confirm-delete-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
+}
+
+/* Glassmorphism Buttons */
+.theme-glassmorphism .cancel-add-btn,
+.theme-glassmorphism .cancel-edit-btn,
+.theme-glassmorphism .cancel-btn {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.theme-glassmorphism .submit-add-btn,
+.theme-glassmorphism .save-btn,
+.theme-glassmorphism .confirm-delete-btn {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.theme-glassmorphism .cancel-add-btn:hover,
+.theme-glassmorphism .cancel-edit-btn:hover,
+.theme-glassmorphism .cancel-btn:hover,
+.theme-glassmorphism .submit-add-btn:hover,
+.theme-glassmorphism .save-btn:hover,
+.theme-glassmorphism .confirm-delete-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* Dark Mode Buttons */
+.theme-dark-mode .cancel-add-btn,
+.theme-dark-mode .cancel-edit-btn,
+.theme-dark-mode .cancel-btn {
+    background: #444;
+    border: 1px solid #666;
+    color: white;
+}
+
+.theme-dark-mode .submit-add-btn,
+.theme-dark-mode .save-btn,
+.theme-dark-mode .confirm-delete-btn {
+    background: #666;
+    border: 1px solid #888;
+    color: white;
+}
+
+.theme-dark-mode .cancel-add-btn:hover,
+.theme-dark-mode .cancel-edit-btn:hover,
+.theme-dark-mode .cancel-btn:hover {
+    background: #555;
+}
+
+.theme-dark-mode .submit-add-btn:hover,
+.theme-dark-mode .save-btn:hover,
+.theme-dark-mode .confirm-delete-btn:hover {
+    background: #777;
+}
+
+/* Material Buttons */
+.theme-material .cancel-add-btn,
+.theme-material .cancel-edit-btn,
+.theme-material .cancel-btn {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    color: #666;
+}
+
+.theme-material .submit-add-btn,
+.theme-material .save-btn,
+.theme-material .confirm-delete-btn {
+    background: #6200ee;
+    border: 2px solid #6200ee;
+    color: white;
+}
+
+.theme-material .cancel-add-btn:hover,
+.theme-material .cancel-edit-btn:hover,
+.theme-material .cancel-btn:hover {
+    background: #e9ecef;
+}
+
+.theme-material .submit-add-btn:hover,
+.theme-material .save-btn:hover,
+.theme-material .confirm-delete-btn:hover {
+    background: #3700b3;
+}
+
+/* Loading States */
+.loading, .error {
+    text-align: center;
+    padding: 4rem 2rem;
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin: 2rem;
+    border-radius: 12px;
+}
+
+.theme-neo-brutalism .loading,
+.theme-neo-brutalism .error {
+    background: #FFF;
+    border: 4px solid #000;
+    box-shadow: 6px 6px 0 #000;
+}
+
+.theme-neo-brutalism .error {
+    background: #FF6B6B;
+}
+
+.theme-glassmorphism .loading,
+.theme-glassmorphism .error {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.theme-dark-mode .loading,
+.theme-dark-mode .error {
+    background: #2d2d2d;
+    border: 1px solid #444;
+}
+
+.theme-material .loading,
+.theme-material .error {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.retry-btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-weight: 900;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.theme-neo-brutalism .retry-btn {
+    background: #000;
+    color: #FFE66D;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+}
+
+.theme-neo-brutalism .retry-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
+}
+
+.theme-glassmorphism .retry-btn {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.theme-glassmorphism .retry-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.theme-dark-mode .retry-btn {
+    background: #444;
+    border: 1px solid #666;
+    color: white;
+}
+
+.theme-dark-mode .retry-btn:hover {
+    background: #555;
+}
+
+.theme-material .retry-btn {
+    background: #6200ee;
+    color: white;
+    border: none;
+}
+
+.theme-material .retry-btn:hover {
+    background: #3700b3;
+}
+
+.deleting {
+    opacity: 0.6;
+}
+
+.theme-neo-brutalism .deleting {
+    background: #FFE66D !important;
+}
+
+/* Scrollbar Styling */
+.expenses-scrollable::-webkit-scrollbar {
+    width: 8px;
+}
+
+.theme-neo-brutalism .expenses-scrollable::-webkit-scrollbar-track {
+    background: #FFE66D;
+    border: 2px solid #000;
+}
+
+.theme-neo-brutalism .expenses-scrollable::-webkit-scrollbar-thumb {
+    background: #FF6B6B;
+    border: 2px solid #000;
+}
+
+.theme-glassmorphism .expenses-scrollable::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-glassmorphism .expenses-scrollable::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.theme-dark-mode .expenses-scrollable::-webkit-scrollbar-track {
+    background: #2d2d2d;
+}
+
+.theme-dark-mode .expenses-scrollable::-webkit-scrollbar-thumb {
+    background: #444;
+}
+
+.theme-material .expenses-scrollable::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.theme-material .expenses-scrollable::-webkit-scrollbar-thumb {
+    background: #bb86fc;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .header-right {
+        justify-content: center;
+    }
+    
+    .month-title {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .expense-item {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .expense-right {
+        justify-content: center;
+    }
+    
+    .add-actions, .edit-actions, .delete-actions {
+        flex-direction: column;
+    }
+    
+    .theme-selector {
+        right: 1rem;
+        left: 1rem;
+    }
+    
+    .modal-overlay {
+        padding: 1rem;
+    }
+    
+    .add-modal, .edit-modal, .delete-confirmation {
+        padding: 1.5rem;
+    }
+}
+
+/* ===== PERBAIKAN THEME SELECTOR ===== */
+.theme-selector-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Background semi-transparent */
+    z-index: 9999; /* Z-index sangat tinggi */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 120px;
+}
+
+.theme-selector {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    min-width: 280px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    backdrop-filter: none !important;
+    border: 2px solid rgba(255,255,255,0.3);
+    z-index: 9999;
+    position: relative;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    border: 3px solid red !important;
+}
+
+/* Theme selector untuk setiap tema */
+.theme-neo-brutalism .theme-selector {
+    background: #FFE66D;
+    border: 4px solid #000;
+    box-shadow: 8px 8px 0 #000;
+}
+
+.theme-glassmorphism .theme-selector {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.theme-dark-mode .theme-selector {
+    background: #2d2d2d;
+    border: 2px solid #444;
+    color: white;
+}
+
+.theme-material .theme-selector {
+    background: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 1px solid #e0e0e0;
+}
+
+.theme-selector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+}
+
+.theme-neo-brutalism .theme-selector-header {
+    border-bottom: 3px solid #000;
+}
+
+.theme-glassmorphism .theme-selector-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.theme-dark-mode .theme-selector-header {
+    border-bottom: 1px solid #444;
+}
+
+.theme-material .theme-selector-header {
+    border-bottom: 2px solid #e9ecef;
+}
+
+.theme-selector-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 900;
+}
+
+.close-theme-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
     width: 40px;
     height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    transition: background 0.2s;
+    transition: all 0.3s ease;
 }
 
-.close-btn:hover {
+.theme-neo-brutalism .close-theme-btn {
+    background: #FF6B6B;
+    border: 2px solid #000;
+}
+
+.theme-neo-brutalism .close-theme-btn:hover {
+    transform: translate(1px, 1px);
+}
+
+.theme-glassmorphism .close-theme-btn {
+    background: rgba(255, 107, 107, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.theme-glassmorphism .close-theme-btn:hover {
+    background: rgba(255, 107, 107, 1);
+}
+
+.theme-dark-mode .close-theme-btn {
+    background: #dc3545;
+}
+
+.theme-dark-mode .close-theme-btn:hover {
+    background: #c82333;
+}
+
+.theme-material .close-theme-btn {
+    background: #f8f9fa;
+    color: #666;
+}
+
+.theme-material .close-theme-btn:hover {
+    background: #e9ecef;
+}
+
+.theme-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    width: 100%;
+    text-align: left;
+}
+
+/* Theme option styles untuk setiap tema */
+.theme-neo-brutalism .theme-option {
+    background: #FFF;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+}
+
+.theme-neo-brutalism .theme-option:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
+}
+
+.theme-neo-brutalism .theme-option.active {
+    background: #4ECDC4;
+}
+
+.theme-glassmorphism .theme-option {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.theme-glassmorphism .theme-option:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
-.edit-form {
-    padding: 25px;
+.theme-glassmorphism .theme-option.active {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-.form-group {
-    margin-bottom: 20px;
+.theme-dark-mode .theme-option {
+    background: #3d3d3d;
+    border: 1px solid #555;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #2c3e50;
-    font-size: 0.95em;
+.theme-dark-mode .theme-option:hover {
+    background: #4d4d4d;
 }
 
-.amount-input-container {
-    position: relative;
-    display: flex;
-    align-items: center;
+.theme-dark-mode .theme-option.active {
+    background: #6200ee;
+    border: 1px solid #bb86fc;
 }
 
-.currency-symbol {
-    position: absolute;
-    left: 12px;
-    color: #7f8c8d;
-    font-weight: 600;
-    z-index: 1;
-}
-
-.amount-input-large {
-    padding-left: 40px;
-    font-size: 1.1em;
-    font-weight: 600;
-    text-align: right;
-}
-
-.amount-preview {
-    margin-top: 8px;
-    font-size: 1.1em;
-    font-weight: 600;
-    color: #e74c3c;
-    text-align: center;
-    padding: 8px;
+.theme-material .theme-option {
     background: #f8f9fa;
-    border-radius: 8px;
+    border: 2px solid #e9ecef;
 }
 
-.edit-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
+.theme-material .theme-option:hover {
+    background: #e9ecef;
 }
 
-.cancel-edit-btn {
-    padding: 15px 25px;
-    background: #95a5a6;
+.theme-material .theme-option.active {
+    background: #6200ee;
     color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
+    border: 2px solid #6200ee;
+}
+
+.theme-icon {
+    font-size: 1.5rem;
+    width: 30px;
+    text-align: center;
+}
+
+.theme-name {
     flex: 1;
-    transition: all 0.2s;
+    font-size: 1rem;
 }
 
-.cancel-edit-btn:hover:not(:disabled) {
-    background: #7f8c8d;
-    transform: translateY(-1px);
+.theme-check {
+    font-weight: 900;
+    font-size: 1.2rem;
 }
 
-.save-btn {
-    padding: 15px 25px;
-    background: linear-gradient(135deg, #27ae60, #219a52);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
-    flex: 2;
+/* Perbaikan header theme indicator */
+.theme-indicator {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+    opacity: 0.8;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all 0.2s;
+    gap: 0.5rem;
 }
 
-.save-btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+/* Pastikan theme selector tidak tertutup */
+.header {
+    position: relative;
+    z-index: 100;
 }
 
-.save-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    transform: none;
-}
-
+/* Loading spinner untuk edit modal */
 .loading-spinner {
+    display: inline-block;
     width: 16px;
     height: 16px;
     border: 2px solid transparent;
-    border-top: 2px solid white;
+    border-top: 2px solid currentColor;
     border-radius: 50%;
     animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
 }
 
 @keyframes spin {
@@ -386,206 +1533,26 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Delete Confirmation Modal */
-.delete-confirmation {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-}
-
-.delete-confirmation h3 {
-    margin: 0 0 15px 0;
-    color: #e74c3c;
-    font-size: 1.3em;
-}
-
-.delete-details {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-}
-
-.delete-desc {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 5px;
-    font-size: 1.1em;
-}
-
-.delete-date {
-    color: #7f8c8d;
-    font-size: 0.9em;
-    margin-bottom: 5px;
-}
-
-.delete-amount {
-    color: #e74c3c;
-    font-weight: 600;
-    font-size: 1.1em;
-}
-
-.delete-warning {
-    color: #e74c3c;
-    font-size: 0.9em;
-    margin-bottom: 20px;
-    font-style: italic;
-}
-
-.delete-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.cancel-btn {
-    padding: 12px 25px;
-    background: #95a5a6;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
-    flex: 1;
-}
-
-.cancel-btn:hover {
-    background: #7f8c8d;
-}
-
-.confirm-delete-btn {
-    padding: 12px 25px;
-    background: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
-    flex: 1;
-}
-
-.confirm-delete-btn:hover {
-    background: #c0392b;
-}
-
-/* Loading, Error, Empty States */
-.loading, .error {
-    text-align: center;
-    padding: 50px 20px;
-    font-size: 1.1em;
-    color: #7f8c8d;
-    flex: 1;
-}
-
-.error {
-    color: #e74c3c;
-}
-
-.retry-btn {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 50px 20px;
-    color: #7f8c8d;
-    font-style: italic;
-}
-
-/* Responsive untuk mobile */
-@media (max-width: 480px) {
-    .simple-header {
-        padding: 12px 15px;
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .theme-selector-overlay {
+        padding: 1rem;
+        align-items: flex-start;
+        padding-top: 80px;
     }
     
-    .simple-header h1 {
-        font-size: 1.3em;
+    .theme-selector {
+        width: 90%;
+        max-width: 300px;
     }
     
-    .expenses-scrollable {
-        padding: 12px;
-    }
-    
-    .month-header {
-        padding: 10px 12px;
-    }
-    
-    .month-header h3 {
-        font-size: 1em;
-    }
-    
-    .month-total {
-        font-size: 0.9em;
-        padding: 3px 10px;
-    }
-    
-    .expense-item-simple {
-        padding: 10px 12px;
-    }
-    
-    .expense-right {
-        gap: 8px;
-    }
-    
-    .delete-btn {
-        font-size: 1em;
-    }
-    
-    .form-container {
-        padding: 12px;
-    }
-    
-    .form-row {
-        gap: 8px;
-    }
-    
-    .form-input {
-        padding: 10px;
-        font-size: 0.95em;
-    }
-    
-    .amount-input {
-        width: 90px;
-    }
-    
-    .edit-modal {
-        margin: 10px;
-    }
-    
-    .edit-header {
-        padding: 15px 20px;
-    }
-    
-    .edit-header h2 {
-        font-size: 1.2em;
-    }
-    
-    .edit-form {
-        padding: 20px;
-    }
-    
-    .edit-actions {
+    .header {
         flex-direction: column;
+        gap: 1rem;
+        text-align: center;
     }
     
-    .delete-confirmation {
-        padding: 20px;
-        margin: 10px;
-    }
-    
-    .delete-actions {
-        flex-direction: column;
+    .header-right {
+        justify-content: center;
     }
 }

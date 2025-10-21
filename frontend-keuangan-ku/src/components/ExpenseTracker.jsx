@@ -1,11 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../style/ExpenseTracker.css';
+
+// Theme configuration
+const themes = {
+  neoBrutalism: {
+    name: 'Neo Brutalism',
+    className: 'theme-neo-brutalism',
+    icon: '🟥'
+  },
+  glassmorphism: {
+    name: 'Glassmorphism',
+    className: 'theme-glassmorphism',
+    icon: '🪟'
+  },
+  darkMode: {
+    name: 'Dark Mode',
+    className: 'theme-dark-mode',
+    icon: '🌙'
+  },
+  material: {
+    name: 'Material Design',
+    className: 'theme-material',
+    icon: '🎨'
+  }
+};
+
+// Utility functions untuk theme management
+const ThemeManager = {
+  // Save theme to localStorage
+  saveTheme: (themeKey) => {
+    try {
+      localStorage.setItem('expenseTrackerTheme', themeKey);
+      return true;
+    } catch (error) {
+      console.error('Failed to save theme:', error);
+      return false;
+    }
+  },
+  
+  // Load theme from localStorage
+  loadTheme: () => {
+    try {
+      const theme = localStorage.getItem('expenseTrackerTheme');
+      return theme && themes[theme] ? theme : 'neoBrutalism';
+    } catch (error) {
+      console.error('Failed to load theme:', error);
+      return 'neoBrutalism';
+    }
+  }
+};
 
 const ExpenseTracker = () => {
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [monthlyTotals, setMonthlyTotals] = useState({});
+    const [monthlyStats, setMonthlyStats] = useState({});
     const [deletingId, setDeletingId] = useState(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [expenseToDelete, setExpenseToDelete] = useState(null);
@@ -13,12 +63,45 @@ const ExpenseTracker = () => {
     const [editingExpense, setEditingExpense] = useState(null);
     const [saving, setSaving] = useState(false);
     
+    // ✅ FIX: Ambil tema dari localStorage saat initial render
+    const [currentTheme, setCurrentTheme] = useState(() => {
+      return ThemeManager.loadTheme();
+    });
+    
+    const [showThemeSelector, setShowThemeSelector] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
+    
+    const themeSelectorRef = useRef(null);
+
     // State untuk form input
     const [formData, setFormData] = useState({
         date: new Date().toISOString().split('T')[0],
         amount: '',
         description: ''
     });
+
+    // Close theme selector when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (themeSelectorRef.current && !themeSelectorRef.current.contains(event.target)) {
+                setShowThemeSelector(false);
+            }
+        };
+
+        if (showThemeSelector) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showThemeSelector]);
+
+    // ✅ FIX: Simpan tema ke localStorage setiap kali currentTheme berubah
+    useEffect(() => {
+      ThemeManager.saveTheme(currentTheme);
+      console.log('💾 Tema disimpan:', currentTheme);
+    }, [currentTheme]);
 
     // Format currency ke Rupiah
     const formatCurrency = (amount) => {
@@ -29,14 +112,25 @@ const ExpenseTracker = () => {
         }).format(amount);
     };
 
-    // Format tanggal ke Indonesia
+    // Format tanggal ke Indonesia (tanpa tahun 2025)
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString('id-ID', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        });
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const expenseYear = date.getFullYear();
+        
+        if (expenseYear === currentYear) {
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long'
+            });
+        } else {
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
     };
 
     // Format bulan ke Indonesia
@@ -65,6 +159,7 @@ const ExpenseTracker = () => {
             if (data.success) {
                 setExpenses(data.data);
                 calculateMonthlyTotals(data.data);
+                calculateMonthlyStats(data.data);
             } else {
                 throw new Error('Data tidak berhasil diambil');
             }
@@ -99,6 +194,49 @@ const ExpenseTracker = () => {
         setMonthlyTotals(monthlyData);
     };
 
+    // Hitung statistik hemat per bulan
+    const calculateMonthlyStats = (expensesData) => {
+        const stats = {};
+        const today = new Date();
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+        
+        expensesData.forEach(expense => {
+            const date = new Date(expense.date);
+            const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            
+            if (!stats[monthYear]) {
+                const month = date.getMonth();
+                const year = date.getFullYear();
+                
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                const effectiveDays = (month === currentMonth && year === currentYear) 
+                    ? today.getDate() 
+                    : daysInMonth;
+                
+                stats[monthYear] = {
+                    daysInMonth: daysInMonth,
+                    effectiveDays: effectiveDays,
+                    totalExpenses: 0,
+                    dailyAverage: 0,
+                    budgetPerDay: 65000,
+                    overBudgetDays: 0
+                };
+            }
+            
+            stats[monthYear].totalExpenses += parseInt(expense.amount);
+        });
+        
+        Object.keys(stats).forEach(monthKey => {
+            const stat = stats[monthKey];
+            stat.dailyAverage = stat.totalExpenses / stat.effectiveDays;
+            stat.overBudgetDays = Math.ceil(Math.max(0, stat.totalExpenses - (stat.budgetPerDay * stat.effectiveDays)) / stat.budgetPerDay);
+        });
+        
+        setMonthlyStats(stats);
+    };
+
     // Handle form input change
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -130,7 +268,6 @@ const ExpenseTracker = () => {
                 })
             });
 
-
             const result = await response.json();
 
             if (result.success) {
@@ -139,6 +276,7 @@ const ExpenseTracker = () => {
                     amount: '',
                     description: ''
                 });
+                setShowAddModal(false);
                 fetchExpenses();
             } else {
                 throw new Error('Gagal menambah data');
@@ -177,7 +315,6 @@ const ExpenseTracker = () => {
                     description: editingExpense.description
                 })
             });
-
 
             const result = await response.json();
 
@@ -238,6 +375,15 @@ const ExpenseTracker = () => {
         setEditingExpense(null);
     };
 
+    const closeAddModal = () => {
+        setShowAddModal(false);
+        setFormData({
+            date: new Date().toISOString().split('T')[0],
+            amount: '',
+            description: ''
+        });
+    };
+
     const handleEditInputChange = (e) => {
         const { name, value } = e.target;
         setEditingExpense(prev => ({
@@ -246,51 +392,94 @@ const ExpenseTracker = () => {
         }));
     };
 
+    // ✅ FIX: Theme handlers dengan localStorage
+    const handleThemeChange = (themeKey) => {
+        console.log('🔄 Mengganti tema ke:', themeKey);
+        setCurrentTheme(themeKey);
+        setShowThemeSelector(false);
+    };
+
+    const toggleThemeSelector = () => {
+        setShowThemeSelector(!showThemeSelector);
+    };
+
     useEffect(() => {
         fetchExpenses();
     }, []);
 
     if (loading) {
         return (
-            <div className="expense-tracker">
-                <div className="loading">Memuat data...</div>
-                <FormInput 
-                    formData={formData}
-                    onInputChange={handleInputChange}
-                    onSubmit={handleSubmit}
-                    disabled={true}
-                />
+            <div className={`expense-tracker ${themes[currentTheme].className}`}>
+                <div className="loading">🔄 MEMUAT DATA...</div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="expense-tracker">
+            <div className={`expense-tracker ${themes[currentTheme].className}`}>
                 <div className="error">
-                    Error: {error}
+                    ⚡ ERROR: {error}
                     <button onClick={fetchExpenses} className="retry-btn">
-                        Coba Lagi
+                        COBA LAGI
                     </button>
                 </div>
-                <FormInput 
-                    formData={formData}
-                    onInputChange={handleInputChange}
-                    onSubmit={handleSubmit}
-                    disabled={true}
-                />
             </div>
         );
     }
 
     return (
-        <div className="expense-tracker">
-            {/* Header Simple */}
-            <header className="simple-header">
-                <h1>💰 Catatan Keuangan</h1>
+        <div className={`expense-tracker ${themes[currentTheme].className}`}>
+            {/* Header dengan Theme Selector */}
+            <header className="header">
+                <div className="header-left">
+                    <h1>💸 TRACKER UANG V1</h1>
+                    <div className="theme-indicator">{themes[currentTheme].icon} {themes[currentTheme].name}</div>
+                </div>
+                <div className="header-right">
+                    <button 
+                        className="theme-toggle-btn"
+                        onClick={toggleThemeSelector}
+                        title="Ganti Tema"
+                    >
+                        🎨
+                    </button>
+                    <button 
+                        className="add-floating-btn"
+                        onClick={() => setShowAddModal(true)}
+                        title="Tambah Data Baru"
+                    >
+                        +
+                    </button>
+                </div>
             </header>
 
-            {/* List Expenses - Scrollable */}
+            {/* Theme Selector Dropdown */}
+            {showThemeSelector && (
+                <div className="theme-selector-overlay">
+                    <div ref={themeSelectorRef} className="theme-selector">
+                        <div className="theme-selector-header">
+                            <h3>PILIH TEMA</h3>
+                            <button className="close-theme-btn" onClick={() => setShowThemeSelector(false)}>×</button>
+                        </div>
+                        <div className="theme-options">
+                            {Object.entries(themes).map(([key, theme]) => (
+                                <button
+                                    key={key}
+                                    className={`theme-option ${currentTheme === key ? 'active' : ''}`}
+                                    onClick={() => handleThemeChange(key)}
+                                >
+                                    <span className="theme-icon">{theme.icon}</span>
+                                    <span className="theme-name">{theme.name}</span>
+                                    {currentTheme === key && <span className="theme-check">✓</span>}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* List Expenses */}
             <main className="expense-list-container">
                 <div className="expenses-scrollable">
                     {Object.keys(monthlyTotals)
@@ -298,26 +487,58 @@ const ExpenseTracker = () => {
                         .map(monthKey => (
                             <div key={monthKey} className="month-section">
                                 <div className="month-header">
-                                    <h3>{monthlyTotals[monthKey].monthName}</h3>
-                                    <div className="month-total">
-                                        {formatCurrency(monthlyTotals[monthKey].total)}
+                                    <div className="month-title">
+                                        <h3 className="month-name">📅 {monthlyTotals[monthKey].monthName.toUpperCase()}</h3>
+                                        <div className="month-total">
+                                            {formatCurrency(monthlyTotals[monthKey].total)}
+                                        </div>
                                     </div>
+                                    {monthlyStats[monthKey] && (
+                                        <div className="month-stats">
+                                            <div className="stat-item">
+                                                <span className="stat-label">RATA-RATA/HARI:</span>
+                                                <span className="stat-value">{formatCurrency(monthlyStats[monthKey].dailyAverage)}</span>
+                                            </div>
+                                            <div className={`stat-item ${monthlyStats[monthKey].overBudgetDays > 0 ? 'over-budget' : 'under-budget'}`}>
+                                                <span className="stat-label">STATUS BUDGET:</span>
+                                                <span className="stat-value">
+                                                    {monthlyStats[monthKey].overBudgetDays > 0 
+                                                        ? `🚨 ${monthlyStats[monthKey].overBudgetDays} HARI BERHEMAT`
+                                                        : '✅ AMAN'
+                                                    }
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 
                                 <div className="expenses-list">
                                     {monthlyTotals[monthKey].expenses
                                         .sort((a, b) => new Date(b.date) - new Date(a.date))
-                                        .map(expense => (
-                                            <ExpenseItem 
-                                                key={expense.id}
-                                                expense={expense}
-                                                onEdit={handleEditClick}
-                                                onDelete={handleDeleteClick}
-                                                isDeleting={deletingId === expense.id}
-                                                formatDate={formatDate}
-                                                formatCurrency={formatCurrency}
-                                            />
-                                        ))
+                                        .map((expense, index, array) => {
+                                            const currentDate = expense.date.split('T')[0];
+                                            const prevDate = index > 0 ? array[index - 1].date.split('T')[0] : null;
+                                            const showDateSeparator = currentDate !== prevDate;
+                                            
+                                            return (
+                                                <React.Fragment key={expense.id}>
+                                                    {showDateSeparator && index > 0 && (
+                                                        <div className="date-separator">⚡ {formatDate(expense.date).toUpperCase()} ⚡</div>
+                                                    )}
+                                                    {index === 0 && (
+                                                        <div className="date-separator">⚡ {formatDate(expense.date).toUpperCase()} ⚡</div>
+                                                    )}
+                                                    <ExpenseItem 
+                                                        expense={expense}
+                                                        onEdit={handleEditClick}
+                                                        onDelete={handleDeleteClick}
+                                                        isDeleting={deletingId === expense.id}
+                                                        formatDate={formatDate}
+                                                        formatCurrency={formatCurrency}
+                                                    />
+                                                </React.Fragment>
+                                            );
+                                        })
                                     }
                                 </div>
                             </div>
@@ -326,19 +547,29 @@ const ExpenseTracker = () => {
                     
                     {Object.keys(monthlyTotals).length === 0 && (
                         <div className="empty-state">
-                            <p>Belum ada catatan pengeluaran</p>
+                            <div className="empty-icon">💸</div>
+                            <p>BELUM ADA CATATAN PENGELUARAN</p>
+                            <button 
+                                className="add-first-btn"
+                                onClick={() => setShowAddModal(true)}
+                            >
+                                + TAMBAH DATA PERTAMA
+                            </button>
                         </div>
                     )}
                 </div>
             </main>
 
-            {/* Form Input - Sticky di bawah */}
-            <FormInput 
-                formData={formData}
-                onInputChange={handleInputChange}
-                onSubmit={handleSubmit}
-                disabled={false}
-            />
+            {/* Add Data Modal */}
+            {showAddModal && (
+                <AddModal 
+                    formData={formData}
+                    onInputChange={handleInputChange}
+                    onSubmit={handleSubmit}
+                    onCancel={closeAddModal}
+                    formatCurrency={formatCurrency}
+                />
+            )}
 
             {/* Delete Confirmation Modal */}
             {showDeleteConfirm && expenseToDelete && (
@@ -366,20 +597,20 @@ const ExpenseTracker = () => {
     );
 };
 
-// Komponen Expense Item dengan Edit dan Delete Button
+// Komponen Expense Item
 const ExpenseItem = ({ expense, onEdit, onDelete, isDeleting, formatDate, formatCurrency }) => {
     return (
-        <div className={`expense-item-simple ${isDeleting ? 'deleting' : ''}`}>
+        <div className={`expense-item ${isDeleting ? 'deleting' : ''}`}>
             <div 
                 className="expense-left clickable"
                 onClick={() => onEdit(expense)}
             >
-                <div className="expense-desc">{expense.description}</div>
-                <div className="expense-date">{formatDate(expense.date)}</div>
+                <div className="expense-desc">📝 {expense.description}</div>
+                <div className="expense-date">🕒 {formatDate(expense.date)}</div>
             </div>
             <div className="expense-right">
                 <div 
-                    className="expense-amount-simple clickable"
+                    className="expense-amount clickable"
                     onClick={() => onEdit(expense)}
                 >
                     {formatCurrency(parseInt(expense.amount))}
@@ -393,57 +624,86 @@ const ExpenseItem = ({ expense, onEdit, onDelete, isDeleting, formatDate, format
                     disabled={isDeleting}
                     title="Hapus"
                 >
-                    {isDeleting ? '⋯' : '🗑️'}
+                    {isDeleting ? '⚡' : '🗑️'}
                 </button>
             </div>
         </div>
     );
 };
 
-// Komponen Form Input yang Sticky
-const FormInput = ({ formData, onInputChange, onSubmit, disabled }) => {
+// Komponen Add Modal Baru
+const AddModal = ({ formData, onInputChange, onSubmit, onCancel, formatCurrency }) => {
     return (
-        <footer className="form-container">
-            <form onSubmit={onSubmit} className="expense-form">
-                <div className="form-row">
-                    <input
-                        type="date"
-                        name="date"
-                        value={formData.date}
-                        onChange={onInputChange}
-                        className="form-input date-input"
-                        disabled={disabled}
-                    />
-                    <input
-                        type="number"
-                        name="amount"
-                        value={formData.amount}
-                        onChange={onInputChange}
-                        placeholder="Jumlah"
-                        className="form-input amount-input"
-                        disabled={disabled}
-                    />
+        <div className="modal-overlay">
+            <div className="add-modal">
+                <div className="add-header">
+                    <h2>➕ TAMBAH DATA BARU</h2>
+                    <button className="close-btn" onClick={onCancel}>×</button>
                 </div>
-                <div className="form-row">
-                    <input
-                        type="text"
-                        name="description"
-                        value={formData.description}
-                        onChange={onInputChange}
-                        placeholder="Deskripsi pengeluaran"
-                        className="form-input desc-input"
-                        disabled={disabled}
-                    />
-                    <button 
-                        type="submit" 
-                        className="submit-btn"
-                        disabled={disabled}
-                    >
-                        ✓
-                    </button>
-                </div>
-            </form>
-        </footer>
+                
+                <form onSubmit={onSubmit} className="add-form">
+                    <div className="form-group">
+                        <label>📅 TANGGAL</label>
+                        <input
+                            type="date"
+                            name="date"
+                            value={formData.date}
+                            onChange={onInputChange}
+                            className="form-input"
+                            required
+                        />
+                    </div>
+                    
+                    <div className="form-group">
+                        <label>💰 JUMLAH PENGELUARAN</label>
+                        <div className="amount-input-container">
+                            <span className="currency-symbol">Rp</span>
+                            <input
+                                type="number"
+                                name="amount"
+                                value={formData.amount}
+                                onChange={onInputChange}
+                                className="form-input amount-input-large"
+                                placeholder="0"
+                                required
+                            />
+                        </div>
+                        <div className="amount-preview">
+                            {formatCurrency(parseInt(formData.amount) || 0)}
+                        </div>
+                    </div>
+                    
+                    <div className="form-group">
+                        <label>📝 DESKRIPSI</label>
+                        <input
+                            type="text"
+                            name="description"
+                            value={formData.description}
+                            onChange={onInputChange}
+                            className="form-input"
+                            placeholder="Deskripsi pengeluaran"
+                            required
+                        />
+                    </div>
+                    
+                    <div className="add-actions">
+                        <button 
+                            type="button" 
+                            className="cancel-add-btn"
+                            onClick={onCancel}
+                        >
+                            BATAL
+                        </button>
+                        <button 
+                            type="submit" 
+                            className="submit-add-btn"
+                        >
+                            💾 SIMPAN DATA
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     );
 };
 
@@ -452,19 +712,19 @@ const DeleteConfirmation = ({ expense, onConfirm, onCancel, formatDate, formatCu
     return (
         <div className="modal-overlay">
             <div className="delete-confirmation">
-                <h3>Hapus Pengeluaran?</h3>
+                <h3>🚨 HAPUS PENGELUARAN?</h3>
                 <div className="delete-details">
                     <div className="delete-desc">{expense.description}</div>
                     <div className="delete-date">{formatDate(expense.date)}</div>
                     <div className="delete-amount">{formatCurrency(parseInt(expense.amount))}</div>
                 </div>
-                <p className="delete-warning">Data yang dihapus tidak dapat dikembalikan</p>
+                <p className="delete-warning">⚠️ DATA YANG DIHAPUS TIDAK DAPAT DIKEMBALIKAN</p>
                 <div className="delete-actions">
                     <button className="cancel-btn" onClick={onCancel}>
-                        Batal
+                        BATAL
                     </button>
                     <button className="confirm-delete-btn" onClick={onConfirm}>
-                        Ya, Hapus
+                        💥 HAPUS
                     </button>
                 </div>
             </div>
@@ -478,13 +738,13 @@ const EditModal = ({ expense, onSave, onCancel, onInputChange, saving, formatCur
         <div className="modal-overlay">
             <div className="edit-modal">
                 <div className="edit-header">
-                    <h2>✏️ Edit Pengeluaran</h2>
+                    <h2>✏️ EDIT PENGELUARAN</h2>
                     <button className="close-btn" onClick={onCancel}>×</button>
                 </div>
                 
                 <form onSubmit={onSave} className="edit-form">
                     <div className="form-group">
-                        <label>Tanggal</label>
+                        <label>📅 TANGGAL</label>
                         <input
                             type="date"
                             name="date"
@@ -496,7 +756,7 @@ const EditModal = ({ expense, onSave, onCancel, onInputChange, saving, formatCur
                     </div>
                     
                     <div className="form-group">
-                        <label>Jumlah Pengeluaran</label>
+                        <label>💰 JUMLAH PENGELUARAN</label>
                         <div className="amount-input-container">
                             <span className="currency-symbol">Rp</span>
                             <input
@@ -515,7 +775,7 @@ const EditModal = ({ expense, onSave, onCancel, onInputChange, saving, formatCur
                     </div>
                     
                     <div className="form-group">
-                        <label>Deskripsi</label>
+                        <label>📝 DESKRIPSI</label>
                         <input
                             type="text"
                             name="description"
@@ -534,7 +794,7 @@ const EditModal = ({ expense, onSave, onCancel, onInputChange, saving, formatCur
                             onClick={onCancel}
                             disabled={saving}
                         >
-                            Batal
+                            BATAL
                         </button>
                         <button 
                             type="submit" 
@@ -544,10 +804,10 @@ const EditModal = ({ expense, onSave, onCancel, onInputChange, saving, formatCur
                             {saving ? (
                                 <>
                                     <span className="loading-spinner"></span>
-                                    Menyimpan...
+                                    MENYIMPAN...
                                 </>
                             ) : (
-                                '💾 Simpan Perubahan'
+                                '💾 SIMPAN PERUBAHAN'
                             )}
                         </button>
                     </div>
